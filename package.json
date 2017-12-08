@@ -1,0 +1,12 @@
+{
+  "name": "sentinelle",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "license": "Beerware",
+  "dependencies": {
+    "bitcoinjs-lib": "^3.1.1",
+    "blockchain.info": "^2.10.1",
+    "commander": "^2.11.0"
+  }
+}
