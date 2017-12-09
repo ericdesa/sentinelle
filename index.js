@@ -1,6 +1,7 @@
 var bigi = require('bigi');
 var bitcoin = require('bitcoinjs-lib');
 var blockexplorer = require('blockchain.info/blockexplorer');
+var fs = require('fs');
 var wif = require('wif');
 
 function getWalletFromPassphrase(passphrase) {
@@ -49,4 +50,51 @@ async function explore(passphraseList, delay) {
     }
 }
 
-explore(require('./passphrase/list2'), 500);
+
+async function testRandomFromList(listFilepath, pathLength = 6, concatenation = ' ') {
+    var sourceArray = require(listFilepath);
+    var testedArray = require('./output/tested');
+    var hasAlreadyBeenTested = true;
+
+    // passphrase
+    do {
+        var suggest = [];
+        for (var i = 0; i < pathLength; i++) {
+            suggest.push(sourceArray[Math.floor(Math.random() * sourceArray.length)]);
+        }
+
+        var passphrase = suggest.join(concatenation);
+        hasAlreadyBeenTested = testedArray.indexOf(passphrase) !== -1;
+    } while (hasAlreadyBeenTested)
+
+    // infos
+    var wallet = getWalletFromPassphrase(passphrase);
+    var walletInfos = await getWalletInfosFromAddress(wallet.address);
+
+    // persistance
+    addPassphraseToFile(passphrase, './output/tested');
+    if (walletInfos.nbTransactions > 0) {
+        printWalletInfos(walletInfos, true, passphrase);
+        addPassphraseToFile(passphrase, './output/match');
+    }
+
+    // loop
+    setTimeout(() => {
+        testRandomFromList(listFilepath, pathLength, concatenation);
+    }, 500);
+}
+
+function addPassphraseToFile(passphrase, filepath) {
+    var testedArray = require(filepath);
+    testedArray.push(passphrase);
+
+    var writeStream = fs.createWriteStream(filepath + '.js');
+    writeStream.write(`module.exports = [\n`);
+    testedArray.forEach((passphrase) => writeStream.write(`"${passphrase}",\n`));
+    writeStream.write(`]`);
+    writeStream.end();
+}
+
+
+testRandomFromList('./passphrase/list1');
+// explore(require('./passphrase/list5'), 500);
