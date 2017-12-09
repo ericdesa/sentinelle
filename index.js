@@ -23,7 +23,6 @@ async function getWalletInfosFromAddress(address) {
     var btcReceived = account.total_received > 0 ? account.total_received / 100000000 : 0;
 
     return {
-        'passphrase': passphrase,
         'address': address,
         'btcRemaining': btcRemaining,
         'btcReceived': btcReceived,
@@ -31,19 +30,19 @@ async function getWalletInfosFromAddress(address) {
     };
 }
 
-function printWalletInfos(walletInfos, printOnlyWhenPositiveBalance) {
+function printWalletInfos(walletInfos, printOnlyWhenPositiveBalance, passphrase) {
     if ((printOnlyWhenPositiveBalance && walletInfos.btcReceived) || !printOnlyWhenPositiveBalance) {
-        console.log(`passphrase: ${passphrase} || balance: ${walletInfos.btcRemaining} BTC / ${walletInfos.btcReceived} BTC au total (${walletInfos.account.n_tx} transactions)`);
+        console.log(`passphrase: ${passphrase} || balance: ${walletInfos.btcRemaining} BTC / ${walletInfos.btcReceived} BTC au total (${walletInfos.nbTransactions} transactions)`);
     }
 }
 
-function explore(passphraseList, delay) {
+async function explore(passphraseList, delay) {
     if (passphraseList.length > 0) {
         var passphrase = passphraseList[0];
         var wallet = getWalletFromPassphrase(passphrase);
         var walletInfos = await getWalletInfosFromAddress(wallet.address);
 
-        printWalletInfos(walletInfos, true);
+        printWalletInfos(walletInfos, false, passphrase);
         setTimeout(() => {
             explore(passphraseList.slice(1), delay);
         }, delay);
