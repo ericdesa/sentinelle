@@ -1,16 +1,20 @@
-
-var bitcoin = require('bitcoinjs-lib');
 var bigi = require('bigi');
-var wif = require('wif');
+var bitcoin = require('bitcoinjs-lib');
 var blockexplorer = require('blockchain.info/blockexplorer');
-
+var wif = require('wif');
 
 function getWalletFromPassphrase(passphrase) {
     var hash = bitcoin.crypto.sha256(passphrase);
     var d = bigi.fromBuffer(hash);
     var address = new bitcoin.ECPair(d).getAddress();
     var privateKey = wif.encode(128, hash, true);
-    return { 'address': address, 'privateKey': privateKey };
+
+    return {
+        'address': address,
+        'privateKey': privateKey
+    };
+}
+
 }
 
 async function printWalletInfosFromAddress(address, printOnlyWhenPositiveBalance, passphrase) {
