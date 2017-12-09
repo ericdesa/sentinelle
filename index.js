@@ -13,7 +13,7 @@ function getWalletFromPassphrase(passphrase) {
     return { 'address': address, 'privateKey': privateKey };
 }
 
-async function printWalletInfosFromAddress(address) {
+async function printWalletInfosFromAddress(address, printOnlyWhenPositiveBalance, passphrase) {
     try {
         var balance = await blockexplorer.getBalance(address);
         var account = balance[address];
@@ -21,8 +21,11 @@ async function printWalletInfosFromAddress(address) {
         var btcRemaining = account.final_balance > 0 ? account.final_balance / 100000000 : 0;
         var btcReceived = account.total_received > 0 ? account.total_received / 100000000 : 0;
 
-        console.log(`======= ${address} =======`);
-        console.log(`balance: ${btcRemaining} BTC / ${btcReceived} BTC au total (${account.n_tx} transactions)`);
+        if ((printOnlyWhenPositiveBalance && btcReceived) || !printOnlyWhenPositiveBalance) {
+            console.log(`======= ${address} =======`);
+            if (passphrase) console.log(`------- ${passphrase} -------`);
+            console.log(`balance: ${btcRemaining} BTC / ${btcReceived} BTC au total (${account.n_tx} transactions)`);
+        }
     } catch (ex) {
         console.error(ex);
     }
@@ -33,7 +36,7 @@ function explore(passphraseList, delay) {
         var passphrase = passphraseList[0];
         var wallet = getWalletFromPassphrase(passphrase);
 
-        printWalletInfosFromAddress(wallet.address);
+        printWalletInfosFromAddress(wallet.address, false, passphrase);
         setTimeout(() => {
             explore(words.slice(1));
         }, delay);
