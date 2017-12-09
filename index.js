@@ -15,24 +15,25 @@ function getWalletFromPassphrase(passphrase) {
     };
 }
 
+async function getWalletInfosFromAddress(address) {
+    var balance = await blockexplorer.getBalance(address);
+    var account = balance[address];
+
+    var btcRemaining = account.final_balance > 0 ? account.final_balance / 100000000 : 0;
+    var btcReceived = account.total_received > 0 ? account.total_received / 100000000 : 0;
+
+    return {
+        'passphrase': passphrase,
+        'address': address,
+        'btcRemaining': btcRemaining,
+        'btcReceived': btcReceived,
+        'nbTransactions': account.n_tx
+    };
 }
 
-async function printWalletInfosFromAddress(address, printOnlyWhenPositiveBalance, passphrase) {
-    try {
-        var balance = await blockexplorer.getBalance(address);
-        var account = balance[address];
-
-        var btcRemaining = account.final_balance > 0 ? account.final_balance / 100000000 : 0;
-        var btcReceived = account.total_received > 0 ? account.total_received / 100000000 : 0;
-
-        if ((printOnlyWhenPositiveBalance && btcReceived) || !printOnlyWhenPositiveBalance) {
-            console.log(`======= ${address} =======`);
-            if (passphrase) console.log(`------- ${passphrase} -------`);
-            console.log(`balance: ${btcRemaining} BTC / ${btcReceived} BTC au total (${account.n_tx} transactions)`);
-            console.log(`  `);
-        }
-    } catch (ex) {
-        console.error(ex);
+function printWalletInfos(walletInfos, printOnlyWhenPositiveBalance) {
+    if ((printOnlyWhenPositiveBalance && walletInfos.btcReceived) || !printOnlyWhenPositiveBalance) {
+        console.log(`passphrase: ${passphrase} || balance: ${walletInfos.btcRemaining} BTC / ${walletInfos.btcReceived} BTC au total (${walletInfos.account.n_tx} transactions)`);
     }
 }
 
@@ -40,8 +41,9 @@ function explore(passphraseList, delay) {
     if (passphraseList.length > 0) {
         var passphrase = passphraseList[0];
         var wallet = getWalletFromPassphrase(passphrase);
+        var walletInfos = await getWalletInfosFromAddress(wallet.address);
 
-        printWalletInfosFromAddress(wallet.address, false, passphrase);
+        printWalletInfos(walletInfos, true);
         setTimeout(() => {
             explore(passphraseList.slice(1), delay);
         }, delay);
