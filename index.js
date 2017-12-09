@@ -25,6 +25,7 @@ async function printWalletInfosFromAddress(address, printOnlyWhenPositiveBalance
             console.log(`======= ${address} =======`);
             if (passphrase) console.log(`------- ${passphrase} -------`);
             console.log(`balance: ${btcRemaining} BTC / ${btcReceived} BTC au total (${account.n_tx} transactions)`);
+            console.log(`  `);
         }
     } catch (ex) {
         console.error(ex);
@@ -38,9 +39,9 @@ function explore(passphraseList, delay) {
 
         printWalletInfosFromAddress(wallet.address, false, passphrase);
         setTimeout(() => {
-            explore(words.slice(1));
+            explore(passphraseList.slice(1));
         }, delay);
     }
 }
 
-explore(require('./passphrase/list1'), 500);
+explore(require('./passphrase/list2'), 500);
