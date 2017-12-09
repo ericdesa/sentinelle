@@ -1,3 +1,4 @@
+
 var bitcoin = require('bitcoinjs-lib');
 var bigi = require('bigi');
 var wif = require('wif');
@@ -27,6 +28,16 @@ async function printWalletInfosFromAddress(address) {
     }
 }
 
+function explore(passphraseList, delay) {
+    if (passphraseList.length > 0) {
+        var passphrase = passphraseList[0];
+        var wallet = getWalletFromPassphrase(passphrase);
 
-var wallet = getWalletFromPassphrase('test');
-printWalletInfosFromAddress(wallet.address);
+        printWalletInfosFromAddress(wallet.address);
+        setTimeout(() => {
+            explore(words.slice(1));
+        }, delay);
+    }
+}
+
+explore(require('./passphrase/list1'), 500);
