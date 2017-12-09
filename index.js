@@ -39,7 +39,7 @@ function explore(passphraseList, delay) {
 
         printWalletInfosFromAddress(wallet.address, false, passphrase);
         setTimeout(() => {
-            explore(passphraseList.slice(1));
+            explore(passphraseList.slice(1), delay);
         }, delay);
     }
 }
