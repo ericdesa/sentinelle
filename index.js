@@ -28,5 +28,11 @@ async function printWalletInfosFromAddress(address) {
 }
 
 
-var wallet = getWalletFromPassphrase('test');
-printWalletInfosFromAddress(wallet.address);
+var fs = require('fs');
+var array = fs.readFileSync('pass.txt').toString().split("\n");
+for(i in array) {
+    var wallet = getWalletFromPassphrase(array[i]);
+    printWalletInfosFromAddress(wallet.address);
+}
+
+
