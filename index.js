@@ -53,7 +53,7 @@ async function explore(passphraseList, delay) {
 
 async function testRandomFromList(listFilepath, pathLength = 6, concatenation = ' ') {
     var sourceArray = require(listFilepath);
-    var testedArray = require('./output/tested');
+    var testedArray = require('./output/tested.js');
     var hasAlreadyBeenTested = true;
 
     // passphrase
