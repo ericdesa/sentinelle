@@ -23,12 +23,15 @@ async function getWalletInfosFromAddress(address) {
     var btcRemaining = account.final_balance > 0 ? account.final_balance / 100000000 : 0;
     var btcReceived = account.total_received > 0 ? account.total_received / 100000000 : 0;
 
-    return {
+    let infos = {
         'address': address,
         'btcRemaining': btcRemaining,
         'btcReceived': btcReceived,
         'nbTransactions': account.n_tx
     };
+
+    console.log(infos);
+    return infos;
 }
 
 function printWalletInfos(walletInfos, printOnlyWhenPositiveBalance, passphrase) {
@@ -94,7 +97,6 @@ function addPassphraseToFile(passphrase, filepath) {
     writeStream.write(`]`);
     writeStream.end();
 }
-
 
 testRandomFromList('./passphrase/list1');
 // explore(require('./passphrase/list5'), 500);
